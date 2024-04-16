@@ -128,15 +128,14 @@ type Product struct {
 }
 
 type User struct {
-	id     uint
-	name   string
-	email  string
-	phones []uint
-	cart   []Product
+	id          uint
+	name, email string
+	phones      []uint
+	cart        []Product
 	Developer
 }
 
-func (uAuth User) getUserToken() (token string, ok bool) {
+func (uAuth *User) getUserToken() (token string, ok bool) {
 
 	userEmail, userName := uAuth.email, uAuth.name
 
@@ -145,7 +144,7 @@ func (uAuth User) getUserToken() (token string, ok bool) {
 	}
 
 	token = fmt.Sprintf("Bearer: %v:%v", uAuth.email, uAuth.name)
-	ok = false
+	ok = true
 
 	return token, ok
 }
@@ -181,18 +180,55 @@ func binarySearch(arr []int, target int) int {
 	return -1
 }
 
+func square(x int) int {
+	return x * x
+}
+
+func squarePoint(x *int) {
+	*x = *x * *x
+}
+
 func main() {
+
+	// Pointers ==========================================
+
+	// var intPointer *int
+	// var uIntPointer *uint
+	// default value of pointer is nil
+	// fmt.Printf(" %T, %v\n", intPointer, intPointer)   // *int, <nil>
+	// fmt.Printf(" %T, %v\n", uIntPointer, uIntPointer) // *uint, <nil>
+	// fmt.Printf("check pointer has value or not %v\n", intPointer == nil) // true
+	// fmt.Printf("%T, %v\n", intPointer, *intPointer)   // don't do this, because intPointer is nil and it will be panic
+	// intPointer = &userAge    // set address of userAge to intPointer
+	// fmt.Println(intPointer)  // get address of userAge 0xc0000b6010
+	// fmt.Println(*intPointer) // get value of userAge 23 use * before pointer
+
+	// var b int = 255
+	// bPointer := &b                           // bPointer is a pointer to b
+	// fmt.Println("Value of b is", *bPointer)  // value 255
+	// fmt.Println("Address of b is", bPointer) // address 0xc0000b6010
+
+	// var newPointer = new(int) // new() function creates a pointer to the type and initializes it to default value
+	// fmt.Printf("newPointer type: %T, newPointer value: %v\n newPointer address: %v\n", newPointer, *newPointer, newPointer)
+	// *newPointer = 10 // to set value to pointer use * before pointer
+	// fmt.Println("newPointer value after set", *newPointer)
+
+	// var x int = 10
+	// square(x) // square doesn't have side effects because it doesn't change the value of x (pass by value)
+	// fmt.Println("x after square", x)
+	// squarePoint(&x) // squarePoint has side effects because it changes the value of x (pass by reference)
+	// fmt.Println("x after squarePoint", x)
 
 	//=========================================================
 	// arr := []int{64, 34, 25, 12, 22, 11, 90}
 	// fmt.Println("Unsorted array:", arr)
 	// bubbleSort(arr)
 	// fmt.Println("Sorted array:", arr)
-	// ===============================================
+	// Struct ===============================================
 	// Yusufboy := User{
-	// 	id:   1,
-	// 	name: "Yusufboy",
-	// 	// email: "asas@gmail.com",
+	// 	id:    1,
+	// 	name:  "Yusufboy",
+	// 	email: "asas@gmail.com",
 	// 	phones: []uint{
 	// 		99889359184,
 	// 		141414124124123,
@@ -214,9 +250,9 @@ func main() {
 	// 	},
 	// }
 
-	// userToken, ok := User.getUserToken(Yusufboy)
+	// userToken, ok := Yusufboy.getUserToken()
 	// if ok {
-	// 	fmt.Printf(userToken)
+	// 	fmt.Println(userToken)
 	// }
 
 	// fmt.Println(Yusufboy)
@@ -225,6 +261,22 @@ func main() {
 	// 	fmt.Println("Don't have email")
 	// }
 	// fmt.Println(Yusufboy.cart)
+
+	// Anonim struct
+	// car := struct {
+	// 	Name, Model, Time, Certificate string
+	// }{
+	// 	Name:        "BMW",
+	// 	Model:       "X5",
+	// 	Time:        fmt.Sprint(time.Now().ISOWeek()),
+	// 	Certificate: time.Now().String(),
+	// }
+
+	// fmt.Println(car)
+	// fmt.Printf("Time: %v \n", car.Time)
+	// fmt.Printf("Certificate %v \n", car.Certificate)
+	// car.Name = "Ferrari"
+	// fmt.Printf("New name: %v", car.Name)
 
 	// ===========================================================
 	// m := make(map[string]int)
@@ -288,19 +340,21 @@ func main() {
 
 	// Arrays ===================================================
 	// q := [...]string{"yellow", "anna", "zick", "gordon", "light"}
-	// sortedNumbers := q[:] // NOT COPIED
+	// sortedNumbers := q[:] // NOT COPY, JUST REFERENCE
 	// slices.Sort(sortedNumbers) // SORTING (MUTATING ORIGIANL ARRAY(q) TOO !!!!!!)
 	// fmt.Println("sorted:", sortedNumbers)
 	// fmt.Println("original array:", q) // SAME RESULT WITH sortedNumbers
 
 	// ar := [...]int{4, 5, 6, 3, 7, 8, 0, 2, 7, 23, 457547, 56756}
-	// b := ar       // COPY FROM ORIGINAL ARRAY, IF ADD & (b := &ar) OR [:] (b := ar[:])  NOT COPY
-	// slices.Sort(b[:]) // MUTATING ONLY b, because we add [:]
+	// g := ar  // COPY FROM ORIGINAL ARRAY, IF ADD & (g := &ar) OR [:] (g := ar[:])  NOT COPY
+	// slices.Sort(g[:]) // MUTATING ONLY g, because we add [:]. [:] is a slice
 	// fmt.Println("Original array", ar)
-	// fmt.Println("Mutated array", b)
+	// fmt.Println("Mutated array", g)
 
-	// var twoD [2][3]int
+	// var twoD [2][3]int // empty array with [[0 0 0] [0 0 0]]
+	// var twoD2 = [2][3]int{{1, 2, 3}, {4, 5, 6}}
 	// fmt.Println(twoD)
+	// fmt.Println(twoD2)
 
 	// strings operations ==========================================
 	// a := "Hello! This is string in go"
