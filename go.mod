@@ -1,3 +1,3 @@
-module learn-go
+module github.com/yusuf-saydullayev/GO
 
-go 1.21.6
+go 1.22.2
