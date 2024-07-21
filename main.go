@@ -188,7 +188,36 @@ func squarePoint(x *int) {
 	*x = *x * *x
 }
 
+var returnUsername func(string) string
+var returnAge func(birthYear uint) (age int, currentYear int)
+
+func calculate(x, y int, action func(int, int) int) int {
+	return action(x, y)
+}
+
+func add(x, y int) int {
+	return x + y
+}
+
 func main() {
+
+	// =============================================================
+
+	var Sum = calculate(1, 2, add)
+	fmt.Println("Sum = ", Sum)
+
+	// returnUsername = func(name string) string { return name }
+
+	// fmt.Println(returnUsername("Yusuf"))
+
+	// returnAge = func(birthYear uint) (age int, currentYear int) {
+	// 	var cyear = time.Now().Year()
+	// 	age = cyear - int(birthYear)
+	// 	return age, cyear
+	// }
+
+	// age, currentYear := returnAge(2000)
+	// fmt.Printf("Age is %v and current year is %v\n", age, currentYear)
 
 	// Pointers ==========================================
 
