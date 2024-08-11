@@ -199,12 +199,369 @@ func add(x, y int) int {
 	return x + y
 }
 
+// closure function in go
+func createDivider(divider int) func(y int) int {
+	dividerFun := func(y int) int {
+		return y / divider
+	}
+
+	return dividerFun
+}
+
+const (
+	min = 1
+	max = 8
+)
+
+type Exapmle struct {
+	Value string
+}
+
+type Myinterface interface{}
+
+func example() Myinterface {
+	var e *Exapmle
+
+	return e
+}
+
+func example2() Myinterface {
+	return nil
+}
+
+func double(nums []int) {
+	// res := make([]int,0, len(nums))
+
+	for _, num := range nums {
+		num *= 2
+	}
+
+	// return res
+}
+
+func handle(list []int) {
+	list[1] = 10
+}
+
+type Square struct {
+	Side int
+}
+
+// In go you can call methods with pointer receiver or value receiver, go automatically
+// handle them based on the type of the receiver
+
+// method with value receiver
+func (s Square) Perimeter() {
+	fmt.Printf("%T, %#v", s, s)
+	fmt.Printf("Perimeter: %d\n", s.Side*4)
+}
+
+// method with pointer receiver
+func (s *Square) Scale(mutiplier int) {
+	fmt.Printf("%T, %#v\n", s, s)
+	s.Side = s.Side * mutiplier
+}
+
+type Runner interface {
+	Run() (canRun string, ok bool)
+}
+type Swimmer interface {
+	Swim() string
+}
+type Flyer interface {
+	Fly() string
+}
+type Ducker interface {
+	Runner
+	Swimmer
+	Flyer
+}
+
+type Duck struct {
+	name string
+}
+
+func (u User) Run() (canRun string, ok bool) {
+	if u.name == "" {
+		return "", false
+	}
+
+	canRun = fmt.Sprintf("User: %v is running", u.name)
+	ok = true
+
+	return
+}
+
+func (u User) WriteCode() string {
+
+	return fmt.Sprintf("User: %v is writing code", u.name)
+}
+
+func (d Duck) Run() (canRun string, ok bool) {
+	if d.name == "" {
+		return "", false
+	}
+
+	canRun = fmt.Sprintf("Duck: %v is running", d.name)
+	ok = true
+
+	return canRun, ok
+}
+
+func (d Duck) Flyer() string {
+
+	return fmt.Sprintf("Duck: %v is flying", d.name)
+}
+
+func typeAssertion(runner Runner) {
+	fmt.Printf("%T, %#v\n", runner, runner)
+
+	switch v := runner.(type) {
+	case User:
+		fmt.Println(v.WriteCode())
+	case Duck:
+		canRun, ok := v.Run()
+		if ok {
+			fmt.Println(canRun)
+		} else {
+			fmt.Println("can't run")
+		}
+	default:
+		fmt.Println("unknown type")
+	}
+}
+
+type Person struct {
+	name string
+	age  int
+}
+
+type WorkExperience struct {
+	name string
+	age  int
+}
+
+type WoodBuilder struct {
+	Person
+	name string
+	WorkExperience
+}
+
+type BrickBuilder struct {
+	Person
+}
+
+type Builder interface {
+	Build()
+}
+type Building struct {
+	Builder
+	name string
+}
+
+func (p Person) printName() {
+	fmt.Println(p.name)
+}
+
+func (w WoodBuilder) printName() {
+	fmt.Println(w.name)
+}
+
+// implements Builder interface for WoodBuilder
+func (w WoodBuilder) Build() {
+	fmt.Println("Building House from Wood")
+}
+
+// implements Builder interface for BrickBuilder
+func (b BrickBuilder) Build() {
+	fmt.Println("Building House from Brick")
+}
+
 func main() {
 
-	// =============================================================
+	// Scaling Struct with interface ==========================================
+	// WoodBuilder and BrickBuilder are implementing Builder interface
+	// we can pass WoodBuilder or BrickBuilder to the Build() method
+	// woodenBuilding := Building{
+	// 	Builder: WoodBuilder{
+	// 		Person:         Person{name: "John", age: 20},
+	// 		name:           "Wood",
+	// 		WorkExperience: WorkExperience{name: "John", age: 20},
+	// 	}}
+	// woodenBuilding.Build()
 
-	var Sum = calculate(1, 2, add)
-	fmt.Println("Sum = ", Sum)
+	// brickBuilding := Building{
+	// 	Builder: BrickBuilder{Person{name: "John", age: 20}},
+	// 	name:    "Brick",
+	// }
+	// brickBuilding.Build()
+
+	// Embedding =============================================================
+	// builder := WoodBuilder{
+	// 	Person{name: "John", age: 20},
+	// 	"Wood",
+	// 	WorkExperience{name: "John", age: 20}}
+	// fmt.Printf("Type:%T, Value:%#v\n", builder, builder)
+
+	// shadowing ===
+	// fmt.Println(builder.Person.name)
+	// fmt.Println(builder.name)
+	// builder.Person.printName()
+	// builder.printName()
+
+	// interface =================================================================
+	// var runner Runner // by default interface is nil
+	// fmt.Printf("Type:%T, Value:%#v\n", runner, runner)
+	// var john = User{id: 1, name: "John"}
+	// runner = john
+	// typeAssertion(runner)
+	// runner.Run()
+	// fmt.Printf("Type:%T, Value:%#v\n", runner, runner)
+	// fmt.Printf("Type:%T, Value:%#v\n", john, john)
+
+	// canRun, ok := john.Run()
+
+	// if ok {
+	// 	fmt.Println(canRun)
+	// } else {
+	// 	fmt.Println("can't run")
+	// }
+
+	// blackDuck := Duck{name: "BlackDuck"}
+	// runner = blackDuck
+	// typeAssertion(runner)
+	// runner.Run()
+	// canRun, ok = blackDuck.Run()
+	// if ok {
+	// 	fmt.Println(canRun)
+	// } else {
+	// 	fmt.Println("can't run")
+	// }
+
+	// var emptyInterface interface{} = john
+	// fmt.Printf("Type:%T, Value:%#v\n", emptyInterface, emptyInterface)
+
+	// value receiver and pointer receiver =======================================
+	// var s = Square{Side: 4}
+	// s.Perimeter() // value receiver, no side effect
+	// s.Scale(2)    // pointer receiver, side effect
+	// fmt.Println("Original:", s.Side)
+
+	// =========================================================================
+	// mainSlice := []int{1, 2, 3, 4, 5}
+	// list := []int{1, 2, 3, 4, 5}
+	// copyMainSlice := mainSlice[:]
+	// copyMainSlice[0] = 10
+
+	// fmt.Println(append(copyOringinArray, 6))
+
+	// handle(list)
+	// double(list)
+	// fmt.Println(list)
+	// fmt.Println(mainSlice)
+	// fmt.Println(copyMainSlice)
+
+	// arr1 := [5]int{1, 2, 3, 4, 5}
+	// fmt.Println(arr1)
+	// slice1 := arr1
+	// slice1[0] = 10
+	// arr1[1] = 20
+	// fmt.Println(slice1)
+	// fmt.Println(arr1)
+
+	// names := [4]string{
+	// 	"John",
+	// 	"Paul",
+	// 	"George",
+	// 	"Ringo",
+	// }
+	// fmt.Println(names)
+
+	// a := names[0:2]
+	// b := names[1:3]
+	// fmt.Println(a, b)
+
+	// b[0] = "XXX"
+	// fmt.Println(a, b)
+	// fmt.Println(names)
+
+	// fmt.Println(example() == example2())
+
+	// fmt.Printf("example = %#v, example2 = %#v\n", example(), example2())
+	// fmt.Println(example())
+	// fmt.Println(example2())
+
+	// switch statement =====================================================
+	// rand.Seed((time.Now()).UnixNano())
+
+	// randValue := rand.Intn(max-min) + 1
+
+	// switch {
+	// case randValue >= 1 && randValue <= 2:
+	// 	fmt.Printf("randValue = %v, adound 1 and 2", randValue)
+	// case randValue >= 3 && randValue <= 4:
+	// 	fmt.Println("randValue3,4 = ", randValue)
+	// case randValue == 5:
+	// 	fmt.Printf("randValue5 = %v, and fallthrough\n", randValue)
+	// 	fallthrough
+	// case randValue == 6:
+	// 	fmt.Println("randValue6 = ", randValue)
+	// case randValue >= 7 && randValue <= 8:
+	// 	fmt.Println("randValue7,8 = ", randValue)
+	// default:
+	// 	fmt.Println("default = ", randValue)
+	// }
+
+	// continue , break, labels ================================================
+
+	// continue will skip the current iteration and continue to the next one
+	// for i := 0; i < 20; i++ {
+	// 	if i%2 == 1 {
+	// 		continue
+	// 	}
+
+	// 	fmt.Println("i = ", i)
+	// }
+
+	// 'break' will break the loop and end the loop
+	// for i := 1; i < 20; i++ {
+	// 	if i > 10 {
+	// 		break
+	// 	}
+	// 	fmt.Println("i = ", i)
+	// }
+
+	// 'labels' can be used to break or continue outer loops
+	// Outer:
+	// 	for i := 1; i <= 20; i++ {
+	// 		for j := 1; j <= 10; j++ {
+	// 			fmt.Printf("i = %v, j = %v\n", i, j)
+	// 			if i == 10 {
+	// you can use break and continue(skip) with labels
+	// continue Outer
+	// break Outer
+	// 			}
+	// 		}
+	// 	}
+
+	// Functions =============================================================
+
+	// closure functions in go
+	// var dollar = 30;
+
+	// getDollar := func () int  {
+	// 	return dollar
+	// }
+	// fmt.Println(getDollar())
+	// dollar = 40
+	// fmt.Println(getDollar())
+
+	// var DivideBy2 = createDivider(2)
+	// fmt.Println(DivideBy2(10))
+	// fmt.Println(DivideBy2(20))
+
+	// var Sum = calculate(1, 2, add)
+	// fmt.Println("Sum = ", Sum)
 
 	// returnUsername = func(name string) string { return name }
 
@@ -221,8 +578,8 @@ func main() {
 
 	// Pointers ==========================================
 
-	// var intPointer *int
-	// var uIntPointer *uint
+	// var intPointer *int // nil pointer
+	// var uIntPointer *uint // nil pointer
 	// default value of pointer is nil
 	// fmt.Printf(" %T, %v\n", intPointer, intPointer)   // *int, <nil>
 	// fmt.Printf(" %T, %v\n", uIntPointer, uIntPointer) // *uint, <nil>
@@ -367,18 +724,17 @@ func main() {
 	// fmt.Println("length:", len(as))
 	// fmt.Println("array:", as)
 
-	// Arrays ===================================================
 	// q := [...]string{"yellow", "anna", "zick", "gordon", "light"}
 	// sortedNumbers := q[:] // NOT COPY, JUST REFERENCE
 	// slices.Sort(sortedNumbers) // SORTING (MUTATING ORIGIANL ARRAY(q) TOO !!!!!!)
 	// fmt.Println("sorted:", sortedNumbers)
 	// fmt.Println("original array:", q) // SAME RESULT WITH sortedNumbers
 
-	// ar := [...]int{4, 5, 6, 3, 7, 8, 0, 2, 7, 23, 457547, 56756}
-	// g := ar  // COPY FROM ORIGINAL ARRAY, IF ADD & (g := &ar) OR [:] (g := ar[:])  NOT COPY
+	// ar := [...]int{4, 5, 6, 3, 7, 8, 0, 2, 7, 23, 457547, 56756} // ORIGINAL ARRAY
+	// g := ar // COPY FROM ORIGINAL ARRAY, IF ADD & (g := &ar) OR [:] (g := ar[:])  NOT COPY
 	// slices.Sort(g[:]) // MUTATING ONLY g, because we add [:]. [:] is a slice
-	// fmt.Println("Original array", ar)
-	// fmt.Println("Mutated array", g)
+	// fmt.Println("Original array", ar) // NOT MUTATED
+	// fmt.Println("Mutated array", g) // MUTATED
 
 	// var twoD [2][3]int // empty array with [[0 0 0] [0 0 0]]
 	// var twoD2 = [2][3]int{{1, 2, 3}, {4, 5, 6}}
@@ -543,9 +899,9 @@ func main() {
 
 }
 
-func getUserToken() {
-	panic("unimplemented")
-}
+// func getUserToken() {
+// 	panic("unimplemented")
+// }
 
 //========================================
 // 10 & 3 --> "and" operator
