@@ -377,7 +377,150 @@ func (b BrickBuilder) Build() {
 	fmt.Println("Building House from Brick")
 }
 
+func showAllElements(arr ...int) {
+	fmt.Printf("Length: %d\n Capacity: %d\n", len(arr), cap(arr))
+
+	for _, value := range arr {
+		fmt.Printf("Value: %d\n", value)
+	}
+}
+
+func showNumbers(num int) {
+	for i := 0; i <= num; i++ {
+		fmt.Println(i)
+	}
+}
+
+func sum(x, y int) (sum int) {
+
+	defer func() { // deferred function
+		fmt.Println("deferred function")
+		sum *= 2
+	}()
+
+	sum = x + y
+	return sum
+}
+
+func defferedValues() {
+	for i := 0; i < 10; i++ {
+		defer fmt.Println("deferred 1", i)
+	}
+
+	for i := 0; i < 10; i++ {
+		defer func() {
+			fmt.Println("deferred 2", i)
+		}()
+	}
+}
+
+func makePanic() {
+
+	panic("make panic")
+}
+
 func main() {
+
+	// MARK: go routines
+	// fmt.Println("Number of logical cores:", runtime.NumCPU()) //get number of logical cores
+	// runtime.GOMAXPROCS(1) // set number of logical cores to use
+	// go showNumbers(100)
+	// runtime.Gosched() // yield the processor, let other goroutines run
+	// fmt.Println("End of main")
+
+	// fmt.Println(sum(1, 2)) // returns deferred function result
+	// defferedValues()
+	makePanic()
+
+	// MARK: maps
+	// var defautlMap map[int]string // by default map is nil
+	// fmt.Println("defautlMap is nil:", defautlMap == nil)
+	// fmt.Printf("Type: %T , Value: %#v\n", defautlMap, defautlMap)
+	// fmt.Printf("defautlMap: len: %v", len(defautlMap))
+
+	// map by make =========
+	// var mapByMake = make(map[string]string)
+	// fmt.Printf("Value: %#v, Type: %T\n", mapByMake, mapByMake)
+
+	// var mapByMage = make(map[string]int, 5)
+	// fmt.Printf("Value: %#v, Type: %T\n", mapByMage, mapByMage)
+
+	// map by literal======
+	// mapByLiteral := map[string]int{
+	// 	"key1": 1,
+	// 	"key2": 2,
+	// 	"key3": 3,
+	// }
+	// fmt.Printf("Value: %#v, Type: %T", mapByLiteral, mapByLiteral)
+
+	// map by new =====
+	// mapByNew := new(map[string]int) // pointer to map, to get value use *new or *mapByNew
+	// fmt.Printf("Value: %#v, Type: %T", mapByNew, mapByNew)
+
+	// insert value ====
+	// var m = make(map[string]int, 5)
+	// m["John"] = 20
+	// m["Jane"] = 21
+	// m["Joe"] = 22
+	// fmt.Printf("Value: %#v, Type: %T\n", m, m)
+	// fmt.Printf("Len: %v\n", len(m))
+	// // update value =====
+	// m["John"] = 21
+	// m["Jane"] = 22
+	// fmt.Printf("Value: %#v, Type: %T\n", m, m)
+	// // get value =======
+	// fmt.Printf("John: %v, Jane: %v\n", m["John"], m["Jane"])
+	// check value
+	// value, ok := m["asdsad"] // if value not exist default value will be 0 and ok will be false
+	// fmt.Println(value, ok)
+	// if ok {
+	// 	fmt.Printf("John: %v", value)
+	// }
+	// delete value =====
+	// delete(m, "John")
+	// fmt.Printf("Value: %#v, Type: %T\n", m, m)
+
+	// map iteration =====
+	// iteration in range not consecutivly
+	// for key, value := range m {
+	// 	fmt.Printf("Key: %v, Value: %v\n", key, value)
+	// }
+
+	// unique map ============
+	// users := []User{
+	// 	{
+	// 		name: "John",
+	// 		id:   1,
+	// 	},
+	// 	{
+	// 		name: "Jane",
+	// 		id:   2,
+	// 	},
+	// 	{
+	// 		name: "Joe",
+	// 		id:   3,
+	// 	},
+	// 	{
+	// 		name: "Jill",
+	// 		id:   3,
+	// 	},
+	// }
+
+	// var uniqueUsers = make(map[uint]struct{}, len(users))
+	// fmt.Printf("Value: %#v, Type: %T\n", uniqueUsers, uniqueUsers)
+
+	// for _, user := range users {
+	// 	if _, ok := uniqueUsers[user.id]; !ok {
+	// 		uniqueUsers[user.id] = struct{}{}
+	// 	}
+	// }
+
+	// fmt.Printf("Value: %v, Type: %T\n", uniqueUsers, uniqueUsers)
+
+	// =====================================
+	// var a = []int{1, 2, 3, 4, 5}
+	// handle(a) // by default slice is passed by reference, so original slice is modified
+	// fmt.Println(a)
 
 	// Scaling Struct with interface ==========================================
 	// WoodBuilder and BrickBuilder are implementing Builder interface
@@ -409,7 +552,7 @@ func main() {
 	// builder.Person.printName()
 	// builder.printName()
 
-	// interface =================================================================
+	// MARK: interface
 	// var runner Runner // by default interface is nil
 	// fmt.Printf("Type:%T, Value:%#v\n", runner, runner)
 	// var john = User{id: 1, name: "John"}
@@ -447,13 +590,13 @@ func main() {
 	// s.Scale(2)    // pointer receiver, side effect
 	// fmt.Println("Original:", s.Side)
 
-	// =========================================================================
+	//MARK: slice
 	// mainSlice := []int{1, 2, 3, 4, 5}
 	// list := []int{1, 2, 3, 4, 5}
 	// copyMainSlice := mainSlice[:]
 	// copyMainSlice[0] = 10
 
-	// fmt.Println(append(copyOringinArray, 6))
+	// fmt.Println(append(copyMainSlice, 6))
 
 	// handle(list)
 	// double(list)
@@ -482,6 +625,8 @@ func main() {
 	// fmt.Println(a, b)
 
 	// b[0] = "XXX"
+	// b = append(b, "XXX")
+	// b = append(b, "YYY")
 	// fmt.Println(a, b)
 	// fmt.Println(names)
 
@@ -491,7 +636,7 @@ func main() {
 	// fmt.Println(example())
 	// fmt.Println(example2())
 
-	// switch statement =====================================================
+	// MARK: switch statement
 	// rand.Seed((time.Now()).UnixNano())
 
 	// randValue := rand.Intn(max-min) + 1
@@ -512,7 +657,7 @@ func main() {
 	// 	fmt.Println("default = ", randValue)
 	// }
 
-	// continue , break, labels ================================================
+	//MARK: continue , break, labels
 
 	// continue will skip the current iteration and continue to the next one
 	// for i := 0; i < 20; i++ {
@@ -576,7 +721,7 @@ func main() {
 	// age, currentYear := returnAge(2000)
 	// fmt.Printf("Age is %v and current year is %v\n", age, currentYear)
 
-	// Pointers ==========================================
+	// MARK: Pointers
 
 	// var intPointer *int // nil pointer
 	// var uIntPointer *uint // nil pointer
@@ -607,9 +752,9 @@ func main() {
 
 	//=========================================================
 	// arr := []int{64, 34, 25, 12, 22, 11, 90}
-	// fmt.Println("Unsorted array:", arr)
+	// fmt.Println("Unsorted slice:", arr)
 	// bubbleSort(arr)
-	// fmt.Println("Sorted array:", arr)
+	// fmt.Println("Sorted slice:", arr)
 	// Struct ===============================================
 	// Yusufboy := User{
 	// 	id:    1,
@@ -664,7 +809,8 @@ func main() {
 	// car.Name = "Ferrari"
 	// fmt.Printf("New name: %v", car.Name)
 
-	// ===========================================================
+	// MARK: make
+	// make creates a slice or map with length and capacity
 	// m := make(map[string]int)
 	// m = map[string]int{
 	// 	"Tashkent": 01,
@@ -684,13 +830,12 @@ func main() {
 	// fmt.Println("Andij is not in m")
 	// fmt.Println(m)
 
-	// make ================================================
 	// m := make([]int, 3,50)
 	// fmt.Println(m)
 	// fmt.Printf("Length %v\n",len(m))
 	// fmt.Printf("Capacity %v\n",cap(m))
 
-	// ========================================================================
+	// MARK: Bitwise
 	// const (
 	// 	isAdmin = 1 << iota
 	// 	isHeadquartes
@@ -749,9 +894,9 @@ func main() {
 	// fmt.Println(strings.Contains(a, "in go"))
 	// fmt.Println(strings.Count(a, "s")) // retruned how many are there
 	// fmt.Println(strings.Index(a, "H")) // returns 0, because Go uses a zero-based indexing system
-	// fmt.Println(strings.Split(a," "))
-	// fmt.Println(strings.ReplaceAll(a,"go","Go"))
-	// fmt.Println(strings.ToUpper(b))
+	// fmt.Println(strings.Split(a," ")) // returns an array
+	// fmt.Println(strings.ReplaceAll(a,"go","Go")) // replace all go with Go
+	// fmt.Println(strings.ToUpper(b)) // returns Hello! THIS IS STRING IN GO
 
 	// array,defer, len, cap ======================================================
 	// names := [3]string{"Yusuf", "Arnold", "John"}
@@ -777,7 +922,7 @@ func main() {
 	// 	fmt.Println()
 	// }
 
-	// Switch Case ================================================================
+	//MARK: Switch Case ================================================================
 	// switch os := runtime.GOOS; os {
 	// case "darwin":
 	// 	fmt.Printf("Operation system is %v", os)
@@ -803,7 +948,7 @@ func main() {
 	// whatAmI(1)
 	// whatAmI("hey")
 
-	//----------------------------------------------------
+	// ----------------------------------------------------
 	// fmt.Println("When's Saturday?")
 	// fmt.Println(time.Monday)
 
@@ -847,7 +992,8 @@ func main() {
 	// fmt.Println(b)
 	// fmt.Println(s2)
 
-	// Runes =============================
+	// MARK: Runes
+	// runes is a sequence of UTF-8 encoded code points.
 	// r:= 'A'
 	// fmt.Printf("%T, %v", r,r)
 
@@ -857,7 +1003,7 @@ func main() {
 	// fmt.Println(a, b, c)
 	// fmt.Println(g)
 
-	// funcitons ==========================
+	// MARK:funcitons
 	// var x, y int = 3, 5
 	// var d = x*x + y*y -> 34
 	// var h = float64(d) -> float64 type 34
@@ -866,7 +1012,7 @@ func main() {
 	// var f = uint(math.Sqrt(float64(x*x + y*y)))
 	// fmt.Println(x, y, f)
 
-	// loop ====================================
+	// MARK: loop
 	// sum := 0
 	// for i := 0; i < 10; i++ {
 	// 	sum += 10
@@ -889,13 +1035,13 @@ func main() {
 	// 	pow(3, 3, 20),
 	// )
 
-	//===========================================
+	//MARK: bitwise operators
 	// a := 10 // 1010
 	// b := 3  // 0011
-	// fmt.Println(10 & 3)
-	// fmt.Println(10 | 3)
-	// fmt.Println(10 ^ 3)
-	// fmt.Println(10 &^ 3)
+	// fmt.Println(10 & 3) // 0010 -> 2
+	// fmt.Println(10 | 3) // 1011 -> 11
+	// fmt.Println(10 ^ 3) // 1001 -> 9
+	// fmt.Println(10 &^ 3) // 1000 -> 8
 
 }
 
