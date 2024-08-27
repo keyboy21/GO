@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"runtime"
+	"strings"
+	"sync"
 	"time"
 )
 
@@ -393,7 +395,7 @@ func showNumbers(num int) {
 
 func sum(x, y int) (sum int) {
 
-	defer func() { // deferred function
+	defer func() { // deferred function calls before returning
 		fmt.Println("deferred function")
 		sum *= 2
 	}()
@@ -404,33 +406,188 @@ func sum(x, y int) (sum int) {
 
 func defferedValues() {
 	for i := 0; i < 10; i++ {
-		defer fmt.Println("deferred 1", i)
+		defer fmt.Println("deferred value", i)
 	}
 
 	for i := 0; i < 10; i++ {
 		defer func() {
-			fmt.Println("deferred 2", i)
+			fmt.Println("deferred func", i)
 		}()
 	}
 }
 
 func makePanic() {
 
+	defer func() {
+		panicValue := recover()
+
+		fmt.Println(panicValue)
+	}()
+
 	panic("make panic")
+	fmt.Println("after panic")
+}
+
+type Fruit struct {
+	name string
+}
+
+func collectValues(fruits []Fruit) map[string]int {
+	result := make(map[string]int, len(fruits))
+
+	for _, fruit := range fruits {
+		if result[fruit.name] == 0 {
+			result[fruit.name] = 1
+		} else {
+			result[fruit.name] += 1
+		}
+	}
+
+	return result
+
+}
+
+// print numbers in a goroutine, but not sequentially
+func waitGroup(num int) {
+
+	var wg sync.WaitGroup
+	wg.Add(num) // set number of goroutines
+
+	for i := 0; i < num; i++ {
+		go func() {
+			defer wg.Done() // finish goroutine when done
+			fmt.Println(i)
+		}()
+	}
+
+	wg.Wait() // wait for all goroutines to finish
+	fmt.Println("End of loop")
+}
+
+func withConcurrent() {
+	start := time.Now()
+	var wg sync.WaitGroup // for adding goroutines to schedule
+	var mu sync.Mutex     // for synchronizing access to counter
+
+	wg.Add(1500)
+	var counter int
+	for i := 0; i < 1500; i++ {
+		go func() {
+			defer wg.Done()
+			time.Sleep(time.Millisecond)
+			mu.Lock() // lock to run one goroutine at a time
+			counter++
+			mu.Unlock() // unlock after use of counter, let other goroutines run
+		}()
+	}
+	wg.Wait()
+
+	fmt.Println("Counter:", counter)
+	fmt.Println("Time taken:", time.Since(start))
+}
+
+func readWithMutex() {
+	start := time.Now()
+	var (
+		counter int
+		wg      sync.WaitGroup
+		mu      sync.RWMutex // read-write mutex for synchronizing reads and writes
+	)
+
+	wg.Add(100)
+
+	for i := 0; i < 50; i++ {
+		go func() {
+			defer wg.Done()
+			mu.RLock()
+			time.Sleep(time.Millisecond)
+			_ = counter
+			mu.RUnlock()
+		}()
+	}
+
+	for i := 0; i < 50; i++ {
+		go func() {
+			defer wg.Done()
+			mu.Lock()
+			time.Sleep(time.Millisecond)
+			counter++
+			mu.Unlock()
+		}()
+	}
+	wg.Wait()
+
+	fmt.Println("Counter:", counter)
+	fmt.Println("Time taken:", time.Since(start))
+
+}
+
+func WordCount(s string) map[string]int {
+
+	words := strings.Fields(s)
+	counts := make(map[string]int, len(words))
+
+	for _, word := range words {
+		counts[word]++
+	}
+	return counts
 }
 
 func main() {
 
+	// MARK: channels
+	// var channel chan int // by default channel is nil
+	// fmt.Println("channel is nil:", channel == nil)
+	// fmt.Printf("Type: %T , Value: %#v\n", channel, channel)
+	// fmt.Printf("Length: %d , Capacity: %d\n", len(channel), cap(channel))
+
+	// write to nil channel blocks forever: deadlock
+	// channel <- 1
+
+	// read from nil channel blocks forever: deadlock
+	// <-channel
+
+	// close nil channel will raise panic
+	// close(channel)
+
+	var unBufferedChannel = make(chan int)
+	fmt.Println("unBufferedChannel is nil:", unBufferedChannel == nil)
+	fmt.Printf("Length: %d , Capacity: %d\n", len(unBufferedChannel), cap(unBufferedChannel))
+
+	// blocks until write to unbuffered channel
+	// unBufferedChannel <- 1
+
+	// blocks until read from unbuffered channel
+	// <-unBufferedChannel
+
+	// only read from unbuffered channel
+	go func(chanToWrite chan<- int) {
+		time.Sleep(time.Second)
+		chanToWrite <- 3
+	}(unBufferedChannel)
+
+	value := <-unBufferedChannel
+
+	fmt.Println("value:", value)
+
+	//=====================================================
+	// var ar = []Fruit{{"apple"}, {"banana"}, {"orange"}, {"apple"}, {"banana"}}
+	// fmt.Println(collectValues(ar))
+
 	// MARK: go routines
 	// fmt.Println("Number of logical cores:", runtime.NumCPU()) //get number of logical cores
 	// runtime.GOMAXPROCS(1) // set number of logical cores to use
-	// go showNumbers(100)
+	// go showNumbers(100) // may not show all numbers
 	// runtime.Gosched() // yield the processor, let other goroutines run
-	// fmt.Println("End of main")
+	// fmt.Println("End of main") // and back to the main goroutine
 
 	// fmt.Println(sum(1, 2)) // returns deferred function result
 	// defferedValues()
-	makePanic()
+	// makePanic()
+
+	// waitGroup(100)
+	// withConcurrent()
+	// readWithMutex()
 
 	// MARK: maps
 	// var defautlMap map[int]string // by default map is nil
@@ -516,6 +673,9 @@ func main() {
 	// }
 
 	// fmt.Printf("Value: %v, Type: %T\n", uniqueUsers, uniqueUsers)
+
+	// str := "hello world. this is a test"
+	// fmt.Println(WordCount(str))
 
 	// =====================================
 	// var a = []int{1, 2, 3, 4, 5}
